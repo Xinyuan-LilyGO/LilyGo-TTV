@@ -128,7 +128,6 @@ void setup(void)
      ******************************************************************/
     if (String(ssid) == "YOUR_SSID" && String(password) ==  "YOUR_PASS") {
         Serial.println("WiFi authentication is not set, skip time synchronization");
-
         ypos += 16;
         u8g2.setCursor(10, ypos);
         u8g2.println("WiFi auth is not set,");
@@ -137,46 +136,45 @@ void setup(void)
         u8g2.println("skip time sync");
         u8g2.sendBuffer();
         delay(5000);
-        return;
+    } else {
+        ypos += 16;
+        u8g2.setCursor(10, ypos);
+
+        u8g2.print("Connecting to ");
+        u8g2.println(ssid);
+        Serial.printf("Connecting to %s \n", ssid);
+        u8g2.sendBuffer();
+
+
+        WiFi.begin(ssid, password);
+        while (WiFi.status() != WL_CONNECTED) {
+            delay(500);
+            Serial.print(".");
+        }
+        ypos += 16;
+        u8g2.setCursor(10, ypos);
+        u8g2.print("\"");
+        u8g2.print(ssid);
+        u8g2.print("\"");
+        u8g2.println(" Connected");
+        Serial.println(" CONNECTED");
+        u8g2.sendBuffer();
+
+        //init and get the time
+        configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+
+        struct tm timeinfo;
+        if (!getLocalTime(&timeinfo)) {
+            Serial.println("Failed to obtain time, Restart in 3 seconds");
+            delay(3000);
+            esp_restart();
+            while (1);
+        }
+        Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+
+        // Sync local time to external RTC
+        rtc.syncToRtc();
     }
-
-    ypos += 16;
-    u8g2.setCursor(10, ypos);
-
-    u8g2.print("Connecting to ");
-    u8g2.println(ssid);
-    Serial.printf("Connecting to %s \n", ssid);
-    u8g2.sendBuffer();
-
-
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    ypos += 16;
-    u8g2.setCursor(10, ypos);
-    u8g2.print("\"");
-    u8g2.print(ssid);
-    u8g2.print("\"");
-    u8g2.println(" Connected");
-    Serial.println(" CONNECTED");
-    u8g2.sendBuffer();
-
-    //init and get the time
-    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-
-    struct tm timeinfo;
-    if (!getLocalTime(&timeinfo)) {
-        Serial.println("Failed to obtain time, Restart in 3 seconds");
-        delay(3000);
-        esp_restart();
-        while (1);
-    }
-    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-
-    // Sync local time to external RTC
-    rtc.syncToRtc();
 
     Serial.println("Enabling IRin");
     irrecv.enableIRIn(); // Start the receiver
