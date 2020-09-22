@@ -101,6 +101,10 @@ void setup(void)
     /*Set touch Pin as input*/
     pinMode(TOUCH_PIN, INPUT);
 
+    /*Touch chip power control*/
+    pinMode(TOUCH_PWR, PULLUP);
+    digitalWrite(TOUCH_PWR, HIGH);
+
     uint8_t ypos = 16;
     u8g2.begin();
     u8g2.enableUTF8Print();

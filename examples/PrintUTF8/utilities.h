@@ -6,6 +6,7 @@
 #define OLED_RST            4
 #define OLED_PWR            33
 #define PWR_ON              2
+#define TOUCH_PWR           32
 #define TOUCH_PIN           15
 #define RTC_SDA             26
 #define RTC_SCL             25
