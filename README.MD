@@ -9,5 +9,5 @@
    - [PCF8563_Library](https://github.com/lewisxhe/PCF8563_Library)
 
 ### Get Start
-1. Copy the folder in the `libdeps` directory to `~Arduino/libraries`
+1. Copy the folder in the `lib` directory to `~Arduino/libraries`
 2. Open the examples in the `examples` directory, compile, and upload after selecting the port
