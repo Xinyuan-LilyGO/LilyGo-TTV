@@ -177,6 +177,7 @@ public:
     void  blink13    (int blinkflag) ;
     int   decode     (decode_results *results) ;
     void  enableIRIn ( ) ;
+    void  disableIRIn( ) ;
     bool  isIdle     ( ) ;
     void  resume     ( ) ;
 
