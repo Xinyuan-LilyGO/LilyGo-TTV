@@ -2051,12 +2051,9 @@ void game0loop(void)
         u8g2.firstPage();
         do {
             chess_Draw();
-            if ( keycode == 0 )
-                keycode = u8g2.getMenuEvent();
         } while ( u8g2.nextPage() );
 
-        if ( keycode == 0 )
-            keycode = u8g2.getMenuEvent();
+        keycode = u8g2.getMenuEvent();
 
         if ( keycode == U8X8_MSG_GPIO_MENU_DOWN )
             keycode = CHESS_KEY_NEXT;

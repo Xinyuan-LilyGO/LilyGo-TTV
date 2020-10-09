@@ -1401,15 +1401,15 @@ void gameloop(void)
     st_Setup(u8g2.getU8g2());
     for (;;) {
         uint8_t  val = u8g2.getMenuEvent();
-        st_Step(y, /* is_auto_fire */ 0, /* is_fire */ val == U8X8_MSG_GPIO_MENU_NEXT);
+        st_Step(y, /* is_auto_fire */ 0, /* is_fire */ val == U8X8_MSG_GPIO_MENU_SELECT);
         u8g2.firstPage();
         do {
             st_Draw(0);
         } while ( u8g2.nextPage() );
-        if ( val == U8X8_MSG_GPIO_MENU_PREV) {
+        if ( val == U8X8_MSG_GPIO_MENU_UP) {
             y++;
         }
-        if (  val == U8X8_MSG_GPIO_MENU_SELECT ) {
+        if (  val == U8X8_MSG_GPIO_MENU_DOWN ) {
             y--;
         }
         if (val == U8X8_MSG_GPIO_MENU_HOME)

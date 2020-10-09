@@ -226,60 +226,60 @@ uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
     if (!ret) {
         return result_msg;
     }
-    // Serial.println(results.value, HEX);
+    Serial.println(results.value, HEX);
     if (results.value != 0xFFFFFFFF) {
         prev_value = results.value;
     }
+    // Note is another remote control, subject to actual remote control
     switch (prev_value) {
-    case 0xFFA25D:  //CH-
-        result_msg = U8X8_MSG_GPIO_MENU_HOME;
+    case 0xFFA25D:  //CH-   //off
+        return 4;
         break;
     case 0xFF629D:  //CH
         break;
     case 0xFFE21D:  //CH+
+        result_msg = U8X8_MSG_GPIO_MENU_HOME;
         break;
     case 0xFF6897:  //0
         break;
     case 0xFF9867:  //100+
+        result_msg = U8X8_MSG_GPIO_MENU_DOWN;
         break;
     case 0xFFB04F:  //200+
         break;
     case 0xFF30CF:  //1
         break;
     case 0xFF18E7:  //2
-        result_msg = U8X8_MSG_GPIO_MENU_UP;
         break;
     case 0xFF7A85://3
         break;
     case 0xFF10EF://4
-        result_msg = U8X8_MSG_GPIO_MENU_PREV;
         break;
     case 0xFF38C7://5
         break;
     case 0xFF5AA5://6
-        result_msg = U8X8_MSG_GPIO_MENU_NEXT;
         break;
     case 0xFF42BD://7
         break;
     case 0xFF4AB5://8
-        result_msg = U8X8_MSG_GPIO_MENU_DOWN;
         break;
     case 0xFF52AD://9
         break;
     case 0xFFA857:  //+
-        break;
-    case 0xFFE01F:  // -
-        break;
-    case 0xFF22DD://NEXT
-        result_msg = U8X8_MSG_GPIO_MENU_PREV;
-        break;
-    case 0xFFC23D://PLAY
         result_msg = U8X8_MSG_GPIO_MENU_SELECT;
         break;
+    case 0xFFE01F:  // -
+        result_msg = U8X8_MSG_GPIO_MENU_PREV;
+        break;
+    case 0xFF22DD://NEXT
+        break;
+    case 0xFFC23D://PLAY
+        break;
     case 0xFF02FD://PREV
-        result_msg = U8X8_MSG_GPIO_MENU_NEXT;
+        result_msg = U8X8_MSG_GPIO_MENU_UP;
         break;
     case 0xFF906F:  //EQ
+        result_msg = U8X8_MSG_GPIO_MENU_NEXT;
         break;
     default:
         break;
