@@ -34,6 +34,25 @@ const int   daylightOffset_sec  = 0;
 
 void scan();
 
+void drawLogo()
+{
+    uint8_t mdy = 0;
+    u8g2.setFlipMode(0);
+    u8g2.setFontMode(1); // Transparent
+    u8g2.setDrawColor(1);
+    u8g2.setFontDirection(0);
+    u8g2.firstPage();
+    do {
+        u8g2.setFont(u8g2_font_inb24_mf);
+        u8g2.drawStr(0, 30 - mdy, "LilyGo");
+        u8g2.drawHLine(2, 35 - mdy, 47);
+        u8g2.drawHLine(3, 36 - mdy, 47);
+        u8g2.drawVLine(45, 32 - mdy, 12);
+        u8g2.drawVLine(46, 33 - mdy, 12);
+    } while ( u8g2.nextPage() );
+    delay(5000);
+}
+
 void setup(void)
 {
     Serial.begin(115200);
@@ -59,19 +78,17 @@ void setup(void)
     u8g2.enableUTF8Print();
     u8g2.clearBuffer();
 
-    u8g2.setFont(u8g2_font_luRS08_tf);
-    u8g2.setDrawColor(1);
-
     Wire.begin(RTC_SDA, RTC_SCL);
 
     Wire1.begin(21, 22);
+
+    drawLogo();
 
     scan();
 
     findRTC = rtc.begin();
     findAHT = aht.begin(&Wire1);
     findBMP = bmp.begin();
-
 
     u8g2_uint_t  pw = u8g2.getStrWidth("+");
     u8g2_uint_t  lw = u8g2.getStrWidth("-");
@@ -80,6 +97,9 @@ void setup(void)
     u8g2_uint_t  lx = u8g2.getWidth() - lw - 5;
 
     ypos = 10;
+    u8g2.clearBuffer();
+    u8g2.setFont(u8g2_font_luRS08_tf);
+    u8g2.setDrawColor(1);
     u8g2.setCursor(10, ypos);
     u8g2.print("PCF8563");
     u8g2.setCursor(findRTC ? px : lx, ypos);
