@@ -312,7 +312,7 @@ void mainloop()
 
                     u8g2.print(" °C");
                     u8g2.setCursor(6, 28);
-                    u8g2.print(temp.relative_humidity);
+                    u8g2.print(humidity.relative_humidity);
                     u8g2.print(" %rH");
 
                     Serial.print("Temperature: ");
