@@ -1,4 +1,4 @@
-<h1 align = "center">LilyGo Tv lite</h1>
+<h1 align = "center">LilyGo TTV</h1>
 
 
 * Depend on the following libraries, for more examples, please refer to the examples in the dependent library
