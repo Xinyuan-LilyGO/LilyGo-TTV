@@ -5,6 +5,7 @@
 #include <IRremote.h>
 #include <Adafruit_AHTX0.h>
 #include <Adafruit_BMP280.h>
+#include <Adafruit_APDS9960.h>
 #include <U8g2lib.h>
 #include <pcf8563.h>
 #include "utilities.h"
@@ -23,7 +24,9 @@ IRrecv irrecv(IR_RECV);
 PCF8563_Class rtc;
 Adafruit_AHTX0 aht;
 Adafruit_BMP280 bmp(&Wire1);
-bool findAHT = false, findBMP = false, findRTC = false;
+Adafruit_APDS9960 apds;
+
+bool findAHT = false, findBMP = false, findRTC = false, findAPDS = false;
 uint32_t timeStamp;
 
 const char *ssid                = "YOUR_SSID";
@@ -89,6 +92,8 @@ void setup(void)
     findRTC = rtc.begin();
     findAHT = aht.begin(&Wire1);
     findBMP = bmp.begin();
+    findAPDS = apds.begin(10, APDS9960_AGAIN_4X,
+                          APDS9960_ADDRESS, &Wire1);
 
     u8g2_uint_t  pw = u8g2.getStrWidth("+");
     u8g2_uint_t  lw = u8g2.getStrWidth("-");
@@ -118,6 +123,13 @@ void setup(void)
     u8g2.print(findBMP ? "+" : "-");
 
     ypos += 12;
+    u8g2.setCursor(10, ypos );
+    u8g2.print("APDS9960");
+    u8g2.setCursor(findAPDS ? px : lx, ypos);
+    u8g2.print(findAPDS ? "+" : "-");
+
+
+    ypos += 12;
     bool setWifi = String(ssid) == "YOUR_SSID" && String(password) ==  "YOUR_PASS";
     u8g2.setCursor(10, ypos);
     u8g2.print("WiFi");
@@ -126,6 +138,10 @@ void setup(void)
 
     u8g2.sendBuffer();
 
+    if (findAPDS) {
+        apds.enableProximity(true);
+        apds.enableGesture(true);
+    }
     if (findBMP) {
         /* Default settings from datasheet. */
         bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
@@ -138,6 +154,8 @@ void setup(void)
     /******************************************************************
      *   WIFI TIME SYNC FUNCTIONS
      ******************************************************************/
+    struct tm timeinfo;
+
     if (!setWifi && ESP_RST_DEEPSLEEP !=  esp_reset_reason())  {
         ypos += 12;
         Serial.printf("Connecting to %s \n", ssid);
@@ -148,15 +166,19 @@ void setup(void)
         u8g2.sendBuffer();
 
         WiFi.begin(ssid, password);
-        while (WiFi.status() != WL_CONNECTED) {
-            delay(500);
-            Serial.print(".");
+        if (WiFi.waitForConnectResult() != WL_CONNECTED ) {
+            WiFi.mode(WIFI_OFF);
+            goto ERR0;
         }
+        // while (WiFi.status() != WL_CONNECTED) {
+        //     delay(500);
+        //     Serial.print(".");
+        // }
         //init and get the time
         configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-
-        struct tm timeinfo;
         if (!getLocalTime(&timeinfo)) {
+            WiFi.mode(WIFI_OFF);
+            goto ERR0;
             Serial.println("Failed to obtain time, Restart in 3 seconds");
             delay(3000);
             esp_restart();
@@ -165,8 +187,9 @@ void setup(void)
         Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
         // Sync local time to external RTC
         rtc.syncToRtc();
+        WiFi.mode(WIFI_OFF);
     }
-
+ERR0:
     irrecv.enableIRIn(); // Start the receiver
 
     if (ESP_RST_DEEPSLEEP !=  esp_reset_reason()) {
@@ -222,6 +245,26 @@ uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
     decode_results results;
     static uint32_t prev_value = 0;
 
+    if (findAPDS) {
+        uint8_t gesture = apds.readGesture();
+        if (gesture == APDS9960_DOWN) {
+            Serial.println("v");
+            result_msg = U8X8_MSG_GPIO_MENU_HOME;
+        }
+        if (gesture == APDS9960_UP) {
+            Serial.println("^");
+            result_msg = U8X8_MSG_GPIO_MENU_SELECT;
+        }
+        if (gesture == APDS9960_LEFT) {
+            Serial.println(">");
+            result_msg = U8X8_MSG_GPIO_MENU_NEXT;
+        }
+        if (gesture == APDS9960_RIGHT) {
+            Serial.println("<");
+            result_msg = U8X8_MSG_GPIO_MENU_PREV;
+        }
+    }
+
     int  ret = irrecv.decode(&results);
     if (!ret) {
         return result_msg;
@@ -230,7 +273,6 @@ uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
     if (results.value != 0xFFFFFFFF) {
         prev_value = results.value;
     }
-    // Note is another remote control, subject to actual remote control
     switch (prev_value) {
     case 0xFFA25D:  //CH-   //off
         return 4;
