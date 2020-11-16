@@ -7,6 +7,9 @@
    - [U8g2_Arduino](https://github.com/olikraus/U8g2_Arduino)
    - [Arduino-IRremote](https://github.com/lewisxhe/Arduino-IRremote)
    - [PCF8563_Library](https://github.com/lewisxhe/PCF8563_Library)
+   - [Adafruit_AHTX0](https://github.com/adafruit/Adafruit_AHTX0)
+   - [Adafruit_APDS9960](https://github.com/adafruit/Adafruit_APDS9960)
+   - [Adafruit_BMP280_Library](https://github.com/adafruit/Adafruit_BMP280_Library)
 
 ### Get Start
 1. Copy the folder in the `lib` directory to `~Arduino/libraries`
