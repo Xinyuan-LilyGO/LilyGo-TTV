@@ -8,7 +8,7 @@
 #include <Adafruit_AHTX0.h>
 #include <Adafruit_BMP280.h>
 #include <U8g2lib.h>
-#include <pcf8563.h
+#include <pcf8563.h>
 #include "utilities.h"
 
 U8G2_SSD1309_128X64_NONAME2_F_4W_SW_SPI u8g2(U8G2_R0,
