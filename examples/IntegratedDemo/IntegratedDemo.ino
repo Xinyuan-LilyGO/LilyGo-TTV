@@ -6,6 +6,7 @@
 #include <Adafruit_AHTX0.h>
 #include <Adafruit_BMP280.h>
 #include <Adafruit_APDS9960.h>
+#include <Adafruit_SGP30.h>
 #include <U8g2lib.h>
 #include <pcf8563.h>
 #include "utilities.h"
@@ -25,8 +26,9 @@ PCF8563_Class rtc;
 Adafruit_AHTX0 aht;
 Adafruit_BMP280 bmp(&Wire1);
 Adafruit_APDS9960 apds;
+Adafruit_SGP30 sgp;
 
-bool findAHT = false, findBMP = false, findRTC = false, findAPDS = false;
+bool findSGP = false, findAHT = false, findBMP = false, findRTC = false, findAPDS = false;
 uint32_t timeStamp;
 
 const char *ssid                = "YOUR_SSID";
@@ -94,6 +96,7 @@ void setup(void)
     findBMP = bmp.begin();
     findAPDS = apds.begin(10, APDS9960_AGAIN_4X,
                           APDS9960_ADDRESS, &Wire1);
+    findSGP = sgp.begin(&Wire1);
 
     u8g2_uint_t  pw = u8g2.getStrWidth("+");
     u8g2_uint_t  lw = u8g2.getStrWidth("-");
@@ -128,6 +131,11 @@ void setup(void)
     u8g2.setCursor(findAPDS ? px : lx, ypos);
     u8g2.print(findAPDS ? "+" : "-");
 
+    ypos += 12;
+    u8g2.setCursor(10, ypos );
+    u8g2.print("SGP30");
+    u8g2.setCursor(findSGP ? px : lx, ypos);
+    u8g2.print(findSGP ? "+" : "-");
 
     ypos += 12;
     bool setWifi = String(ssid) == "YOUR_SSID" && String(password) ==  "YOUR_PASS";
@@ -344,7 +352,42 @@ void mainloop()
             do {
                 u8g2.drawRFrame(2, 2, 60, 30, 3);
                 u8g2.drawRFrame(64, 2, 60, 30, 3);
+                if (findSGP) {
+                    // static int counter = 0;
+                    if (sgp.IAQmeasure()) {
 
+                        Serial.print("TVOC "); Serial.print(sgp.TVOC); Serial.print(" ppb\t");
+                        Serial.print("eCO2 "); Serial.print(sgp.eCO2); Serial.println(" ppm");
+
+                        u8g2.setCursor(6, 15);
+                        u8g2.print(sgp.TVOC);
+
+                        u8g2.print(" ppb");
+                        u8g2.setCursor(6, 28);
+                        u8g2.print(sgp.eCO2);
+                        u8g2.print(" ppm");
+                    }
+
+                    // if (!sgp.IAQmeasureRaw()) {
+                    //     Serial.println("Raw Measurement failed");
+                    //     return;
+                    // }
+                    // Serial.print("Raw H2 "); Serial.print(sgp.rawH2); Serial.print(" \t");
+                    // Serial.print("Raw Ethanol "); Serial.print(sgp.rawEthanol); Serial.println("");
+
+                    // counter++;
+                    // if (counter == 30) {
+                    //     counter = 0;
+
+                    //     uint16_t TVOC_base, eCO2_base;
+                    //     if (! sgp.getIAQBaseline(&eCO2_base, &TVOC_base)) {
+                    //         Serial.println("Failed to get baseline readings");
+                    //         return;
+                    //     }
+                    //     Serial.print("****Baseline values: eCO2: 0x"); Serial.print(eCO2_base, HEX);
+                    //     Serial.print(" & TVOC: 0x"); Serial.println(TVOC_base, HEX);
+                    // }
+                }
                 if (findAHT) {
                     sensors_event_t humidity, temp;
                     aht.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
