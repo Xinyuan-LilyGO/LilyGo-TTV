@@ -10,6 +10,8 @@
    - [Adafruit_AHTX0](https://github.com/adafruit/Adafruit_AHTX0)
    - [Adafruit_APDS9960](https://github.com/adafruit/Adafruit_APDS9960)
    - [Adafruit_BMP280_Library](https://github.com/adafruit/Adafruit_BMP280_Library)
+   - [Adafruit_SGP30](https://github.com/adafruit/Adafruit_SGP30)
+
 
 ### Get Start
 1. Copy the folder in the `lib` directory to `~Arduino/libraries`
