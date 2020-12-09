@@ -16,3 +16,4 @@
 ### Get Start
 1. Copy the folder in the `lib` directory to `~Arduino/libraries`
 2. Open the examples in the `examples` directory, compile, and upload after selecting the port
+3. Arduino IDE board select `ESP32 Dev Module` for the board
