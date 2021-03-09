@@ -11,9 +11,15 @@
    - [Adafruit_APDS9960](https://github.com/adafruit/Adafruit_APDS9960)
    - [Adafruit_BMP280_Library](https://github.com/adafruit/Adafruit_BMP280_Library)
    - [Adafruit_SGP30](https://github.com/adafruit/Adafruit_SGP30)
-
+   - [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)
 
 ### Get Start
 1. Copy the folder in the `lib` directory to `~Arduino/libraries`
 2. Open the examples in the `examples` directory, compile, and upload after selecting the port
 3. Arduino IDE board select `ESP32 Dev Module` for the board
+
+
+
+
+
+
