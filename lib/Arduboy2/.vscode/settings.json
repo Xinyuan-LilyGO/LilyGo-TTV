@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "glcdfont.c": "cpp",
+        "cmath": "cpp",
+        "cstdlib": "cpp"
+    }
+}
