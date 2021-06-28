@@ -13,14 +13,10 @@
 #include "main.h"
 #include <FS.h>
 #include <SPIFFS.h>
+#include "particle.h"
 
-U8G2_SSD1309_128X64_NONAME2_F_4W_SW_SPI u8g2(U8G2_R0,
-        /* clock=*/ OLED_SCLK,
-        /* data=*/  OLED_MOSI,
-        /* cs=*/    OLED_CS,
-        /* dc=*/    OLED_DC,
-        /* reset=*/ OLED_RST);
 
+extern U8G2_SSD1309_128X64_NONAME2_F_4W_SW_SPI u8g2;
 IRrecv irrecv(IR_RECV);
 PCF8563_Class rtc;
 Adafruit_AHTX0 aht;
@@ -43,9 +39,10 @@ void drawLogo()
 {
     uint8_t mdy = 0;
     u8g2.setFlipMode(0);
-    u8g2.setFontMode(1); // Transparent
+    u8g2.setFontMode(1);
     u8g2.setDrawColor(1);
     u8g2.setFontDirection(0);
+
     u8g2.firstPage();
     do {
         u8g2.setFont(u8g2_font_inb24_mf);
@@ -108,6 +105,7 @@ void setup(void)
     u8g2.clearBuffer();
     u8g2.setFont(u8g2_font_luRS08_tf);
     u8g2.setDrawColor(1);
+
     u8g2.setCursor(10, ypos);
     u8g2.print("PCF8563");
     u8g2.setCursor(findRTC ? px : lx, ypos);
@@ -211,9 +209,11 @@ extern void gameloop(void);
 void mainloop(void);
 extern void game0loop(void);
 extern void videoloop();
-
+void Glove_loop(void);
+void Tiny_2048_loop(void);
 void loop(void)
 {
+    Serial.printf("loop");
     uint8_t val =  menuloop();
     Serial.printf("Select : %d\n", val);
     switch (val) {
@@ -227,11 +227,20 @@ void loop(void)
         game0loop();
         break;
     case 3:
+        NewBlocksloop();
+        break;
+    case 4:
+        Glove_loop();
+        break;
+    case 5:
+        Tiny_2048_loop();
+        break;
+    case 6:
         irrecv.disableIRIn();
         videoloop();
         irrecv.enableIRIn();
         break;
-    case 4:
+    case 7:
         u8g2.sleepOn();
         esp_sleep_enable_ext1_wakeup(GPIO_SEL_15, ESP_EXT1_WAKEUP_ANY_HIGH);
         delay(500);
@@ -249,9 +258,10 @@ bool touched()
 
 uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
 {
-    uint8_t result_msg = 0;   /* invalid message, no event */
+    uint8_t result_msg = 0;   // invalid message, no event
     decode_results results;
     static uint32_t prev_value = 0;
+
 
     if (findAPDS) {
         uint8_t gesture = apds.readGesture();

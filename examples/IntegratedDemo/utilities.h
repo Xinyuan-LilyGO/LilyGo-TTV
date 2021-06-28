@@ -12,3 +12,10 @@
 #define RTC_SCL             25
 #define ADC_PIN             34
 #define IR_RECV             13
+
+#define KEY_R   0
+#define KEY_D   0
+#define KEY_L   0
+#define KEY_U   0
+#define KEY_A   0
+#define KEY_B   0

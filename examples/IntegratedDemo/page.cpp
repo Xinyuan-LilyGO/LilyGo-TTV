@@ -31,10 +31,13 @@ struct menu_state {
 
 struct menu_entry_type menu_entry_list[] = {
     { u8g2_font_open_iconic_embedded_4x_t, 65, "Clock Setup"},
-    { u8g2_font_open_iconic_embedded_4x_t, 66, "LittleRookChess"},
-    { u8g2_font_open_iconic_embedded_4x_t, 67, "SpaceTrash"},
+    { u8g2_font_open_iconic_embedded_4x_t, 66, "SpaceTrash"},
+    { u8g2_font_open_iconic_embedded_4x_t, 67, "LittleRookChess"},
+    { u8g2_font_open_iconic_embedded_4x_t, 69, "New Blocks"},
+    { u8g2_font_open_iconic_embedded_4x_t, 70, "Glove"},
+    { u8g2_font_open_iconic_embedded_4x_t, 71, "Tiny_2048"},
     { u8g2_font_open_iconic_embedded_4x_t, 68, "Video"},
-    { u8g2_font_open_iconic_embedded_4x_t, 72, "Sleep"},
+    { u8g2_font_open_iconic_embedded_4x_t, 78, "Sleep"},
     { NULL, 0, NULL }
 };
 
@@ -134,23 +137,25 @@ uint8_t menuloop(void)
     uint8_t val = 0;
     for (;;) {
         do {
+
             u8g2.firstPage();
             do {
+
                 draw(&current_state);
                 u8g2.setFont(u8g2_font_helvB10_tr);
                 u8g2.setCursor((u8g2.getDisplayWidth() - u8g2.getStrWidth(menu_entry_list[destination_state.position].name)) / 2, u8g2.getDisplayHeight() - 5);
                 u8g2.print(menu_entry_list[destination_state.position].name);
-                val = u8g2.getMenuEvent();
+                val = u8g2.getMenuEvent();//这个最终是调用 u8x8_GetMenuEvent，在IntegrateDemo.ino里
                 delay(10);
             } while ( u8g2.nextPage() );
-            if ( val == U8X8_MSG_GPIO_MENU_NEXT )
+            if ( val == U8X8_MSG_GPIO_MENU_NEXT )//遥控向右
                 to_right(&destination_state);
-            if ( val == U8X8_MSG_GPIO_MENU_PREV )
+            if ( val == U8X8_MSG_GPIO_MENU_PREV )//遥控向左
                 to_left(&destination_state);
-            if ( val == U8X8_MSG_GPIO_MENU_SELECT ) {
-                return destination_state.position;
+            if ( val == U8X8_MSG_GPIO_MENU_SELECT ) {//进入▶
+                return destination_state.position;  //按了▶ ,(return)结束当前循环,回到loop函数判断
             }
-            if ( val > 0 ) // all known events are processed, clear event
+            if ( val > 0 ) // 处理所有已知事件，清除事件 all known events are processed, clear event
                 val = 0;
         } while ( towards(&current_state, &destination_state) );
     }
