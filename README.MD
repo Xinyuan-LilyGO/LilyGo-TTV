@@ -1,5 +1,6 @@
 <h1 align = "center">LilyGo TTV</h1>
 
+[Beginner's Guide](https://www.youtube.com/watch?v=uXNZyMLNAQ0)
 
 * Depend on the following libraries, for more examples, please refer to the examples in the dependent library
 *  依赖以下库，更多示例请参考依赖库内示例
